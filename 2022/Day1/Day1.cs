@@ -9,17 +9,13 @@ public class Day1
 
     Console.WriteLine($"{elves.Count} elves...");
 
-    var highestCalories = 0;
+    var orderedElves = elves.OrderByDescending(x => x.Sum());
 
-    foreach (var elf in elves) 
-    {
-      if (elf.Sum() > highestCalories)
-      {
-        highestCalories = elf.Sum();
-      }
-    }
+    var highestCalories = orderedElves.First().Sum();
+    var top3Calories = orderedElves.Take(3).Sum(x => x.Sum());
 
     Console.WriteLine($"Elf with most calories has {highestCalories} calories.");
+    Console.WriteLine($"Top 3 calorie carries have {top3Calories} calories.");
   }
 
   private static List<List<int>> ParseInput()
