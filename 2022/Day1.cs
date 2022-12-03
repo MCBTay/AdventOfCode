@@ -22,6 +22,18 @@ public class Day1
   static void Main()
   {
     var elves = ParseInput(exampleInput);
+
+    var highestCalories = 0;
+
+    foreach (var elf in elves) 
+    {
+      if (elf.Sum() > highestCalories)
+      {
+        highestCalories = elf.Sum();
+      }
+    }
+
+    Console.WriteLine($"Elf with most calories has {highestCalories} calories.");
   }
 
   private static List<List<int>> ParseInput(string input)
