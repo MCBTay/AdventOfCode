@@ -12,8 +12,25 @@ public class Day2
     {
       totalScore += DetermineOutcome(game) + MapSelected(game);
     }
-
     Console.WriteLine($"Total Score: {totalScore}");
+
+    totalScore = 0;
+    foreach (var game in strategyGuide)
+    {
+      totalScore += DetermineOutcomeUpdated(game) + MapSelectedUpdated(game);
+    }
+    Console.WriteLine($"Total Updated Score: {totalScore}");
+  }
+
+  private static int MapSelectedUpdated(List<string> game)
+  {
+    switch(TranslateToNeededMove(game))
+    {
+      case "X": return 1;
+      case "Y": return 2;
+      case "Z": return 3;
+      default:  return 0;
+    }
   }
 
   private static int MapSelected(List<string> game)
@@ -24,6 +41,49 @@ public class Day2
       case "Y": return 2;
       case "Z": return 3;
       default:  return 0;
+    }
+  }
+
+  private static int DetermineOutcomeUpdated(List<string> game)
+  {
+    switch (game.First()) 
+    {
+      case "A": return OpponentThrewRock(TranslateToNeededMove(game));
+      case "B": return OpponentThrewPaper(TranslateToNeededMove(game));
+      case "C": return OpponentThrewScissors(TranslateToNeededMove(game));
+      default:  return 0;
+    }
+  }
+
+  private static string TranslateToNeededMove(List<string> game)
+  {
+    switch (game.First()) 
+    {
+      case "A": 
+        switch (game.Last()) 
+        {
+          case "X": return "Z";
+          case "Y": return "X";
+          case "Z": return "Y";
+          default: return "X";
+        }
+      case "B": 
+        switch (game.Last()) 
+        {
+          case "X": return "X";
+          case "Y": return "Y";
+          case "Z": return "Z";
+          default: return "X";
+        }
+      case "C": 
+        switch (game.Last()) 
+        {
+          case "X": return "Y";
+          case "Y": return "Z";
+          case "Z": return "X";
+          default: return "X";
+        }
+      default:  return "X";
     }
   }
 
@@ -75,7 +135,7 @@ public class Day2
   {
     var games = new List<List<string>>();
     
-    foreach (var line in System.IO.File.ReadLines(@"Day2/input.txt")) 
+    foreach (var line in System.IO.File.ReadLines(@"Day2/example_input.txt")) 
     {
       var split = line.Split(' ');
       if (split.Count() < 2) continue;
