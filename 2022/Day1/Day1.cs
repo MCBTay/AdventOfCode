@@ -27,7 +27,7 @@ public class Day1
     var elves = new List<List<int>>();
     var currentElf = new List<int>();
     
-    foreach (var line in System.IO.File.ReadLines(@"Day1/example_input.txt")) 
+    foreach (var line in System.IO.File.ReadLines(@"Day1/input.txt")) 
     {
       if (string.IsNullOrEmpty(line.Trim())) 
       {
