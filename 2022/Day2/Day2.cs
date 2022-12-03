@@ -75,7 +75,7 @@ public class Day2
   {
     var games = new List<List<string>>();
     
-    foreach (var line in System.IO.File.ReadLines(@"Day2/example_input.txt")) 
+    foreach (var line in System.IO.File.ReadLines(@"Day2/input.txt")) 
     {
       var split = line.Split(' ');
       if (split.Count() < 2) continue;
