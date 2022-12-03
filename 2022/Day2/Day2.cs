@@ -8,49 +8,25 @@ public class Day2
     var strategyGuide = ParseInput();
 
     var totalScore = 0;
+    var totalUpdatedScore = 0;
+    
     foreach (var game in strategyGuide) 
     {
       totalScore += DetermineOutcome(game) + MapSelected(game);
+      totalUpdatedScore += DetermineOutcome(game, true) + MapSelected(game, true);
     }
+    
     Console.WriteLine($"Total Score: {totalScore}");
-
-    totalScore = 0;
-    foreach (var game in strategyGuide)
-    {
-      totalScore += DetermineOutcomeUpdated(game) + MapSelectedUpdated(game);
-    }
-    Console.WriteLine($"Total Updated Score: {totalScore}");
+    Console.WriteLine($"Total Updated Score: {totalUpdatedScore}");
   }
 
-  private static int MapSelectedUpdated(List<string> game)
+  private static int MapSelected(List<string> game, bool updated = false)
   {
-    switch(TranslateToNeededMove(game))
+    switch(updated ? TranslateToNeededMove(game) : game.Last())
     {
       case "X": return 1;
       case "Y": return 2;
       case "Z": return 3;
-      default:  return 0;
-    }
-  }
-
-  private static int MapSelected(List<string> game)
-  {
-    switch(game.Last())
-    {
-      case "X": return 1;
-      case "Y": return 2;
-      case "Z": return 3;
-      default:  return 0;
-    }
-  }
-
-  private static int DetermineOutcomeUpdated(List<string> game)
-  {
-    switch (game.First()) 
-    {
-      case "A": return OpponentThrewRock(TranslateToNeededMove(game));
-      case "B": return OpponentThrewPaper(TranslateToNeededMove(game));
-      case "C": return OpponentThrewScissors(TranslateToNeededMove(game));
       default:  return 0;
     }
   }
@@ -87,13 +63,13 @@ public class Day2
     }
   }
 
-  private static int DetermineOutcome(List<string> game)
+  private static int DetermineOutcome(List<string> game, bool updated = false)
   {
     switch (game.First()) 
     {
-      case "A": return OpponentThrewRock(game.Last());
-      case "B": return OpponentThrewPaper(game.Last());
-      case "C": return OpponentThrewScissors(game.Last());
+      case "A": return OpponentThrewRock(updated ? TranslateToNeededMove(game) : game.Last());
+      case "B": return OpponentThrewPaper(updated ? TranslateToNeededMove(game) : game.Last());
+      case "C": return OpponentThrewScissors(updated ? TranslateToNeededMove(game) : game.Last());
       default:  return 0;
     }
   }
@@ -135,11 +111,10 @@ public class Day2
   {
     var games = new List<List<string>>();
     
-    foreach (var line in System.IO.File.ReadLines(@"Day2/example_input.txt")) 
+    foreach (var line in System.IO.File.ReadLines(@"Day2/input.txt")) 
     {
       var split = line.Split(' ');
       if (split.Count() < 2) continue;
-
       games.Add(split.ToList()); 
     }
 
