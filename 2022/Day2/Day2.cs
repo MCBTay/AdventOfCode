@@ -10,10 +10,21 @@ public class Day2
     var totalScore = 0;
     foreach (var game in strategyGuide) 
     {
-      totalScore += DetermineOutcome(game);
+      totalScore += DetermineOutcome(game) + MapSelected(game);
     }
 
     Console.WriteLine($"Total Score: {totalScore}");
+  }
+
+  private static int MapSelected(List<string> game)
+  {
+    switch(game.Last())
+    {
+      case "X": return 1;
+      case "Y": return 2;
+      case "Z": return 3;
+      default:  return 0;
+    }
   }
 
   private static int DetermineOutcome(List<string> game)
