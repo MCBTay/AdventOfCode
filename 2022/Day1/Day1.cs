@@ -3,10 +3,9 @@
 
 public class Day1 
 {
-  static void Main()
+  public static void CountCalories()
   {
     var elves = ParseInput();
-
     Console.WriteLine($"{elves.Count} elves...");
 
     var highestCalories = 0;
