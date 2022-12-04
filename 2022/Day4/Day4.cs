@@ -9,33 +9,47 @@ public class Day4
         var assignments = ParseInput();
 
         var totalOverlaps = 0;
+        var anyOverlaps = 0;
         foreach (var assignment in assignments)
         {
           var first = assignment.First();
           var last = assignment.Last();
 
-          if (first.First() <= last.First() &&
-              first.Last() >= last.Last())
+          if (first.First() <= last.First() && first.Last() >= last.Last())
           {
             totalOverlaps++;
-            continue;
+          }
+          else if (first.First() >= last.First() && first.Last() <= last.Last())
+          {
+            totalOverlaps++;
           }
 
-          if (first.First() >= last.First() &&
-              first.Last() <= last.Last())
+          if (last.Last() >= first.First() && last.Last() <= first.Last())
           {
-            totalOverlaps++;
-            continue;
+            anyOverlaps++;
+          }
+          else if (last.First() >= first.First() && last.First() <= first.Last())
+          {
+            anyOverlaps++;
+          }
+          else if (first.Last() >= last.First() && first.Last() <= last.Last())
+          {
+            anyOverlaps++;
+          }
+          else if (first.First() >= last.First() && first.First() <= last.Last())
+          {
+            anyOverlaps++;
           }
         }
-        Console.WriteLine($"Total overlaps are {totalOverlaps}");
+        Console.WriteLine($"Complete overlaps are {totalOverlaps}");
+        Console.WriteLine($"Any overlaps are {anyOverlaps}");
     }
 
     private static List<List<List<int>>> ParseInput()
     {
         var assignments = new List<List<List<int>>>();
     
-        foreach (var line in System.IO.File.ReadLines(@"Day4/input.txt")) 
+        foreach (var line in System.IO.File.ReadLines(@"Day4/sample_input.txt")) 
         {
           var pair = new List<List<int>>();
 
