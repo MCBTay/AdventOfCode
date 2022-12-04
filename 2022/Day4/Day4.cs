@@ -15,10 +15,12 @@ public class Day4
           var first = assignment.First();
           var last = assignment.Last();
 
-          if (first.Intersect(last).Count() > 0) anyOverlaps++;
+          var intersectCount = first.Intersect(last).Count();
 
-          if (first.Intersect(last).Count() == first.Count) totalOverlaps++;
-          else if (first.Intersect(last).Count() == last.Count) totalOverlaps++;
+          if (intersectCount > 0) anyOverlaps++;
+
+          if (intersectCount == first.Count) totalOverlaps++;
+          else if (intersectCount == last.Count) totalOverlaps++;
         }
         Console.WriteLine($"Complete overlaps are {totalOverlaps}");
         Console.WriteLine($"Any overlaps are {anyOverlaps}");
