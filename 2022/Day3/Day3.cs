@@ -12,12 +12,19 @@ public class Day3
         foreach (var rucksack in rucksacks)
         {
             var commonItem = FindCommonItem(rucksack);
-            Console.WriteLine(commonItem);
+            sumOfPriorities += ConvertToPriority(commonItem);
         }
         Console.WriteLine($"Sum of the priorities of items in each compartment of all rucksacks: {sumOfPriorities}");
     }
 
-    private static string FindCommonItem(List<string> rucksack)
+    private static int ConvertToPriority(char c)
+    {
+        var priority = char.ToUpper(c) - 64;
+        if (char.IsUpper(c)) priority += 26;
+        return priority;
+    }
+
+    private static char FindCommonItem(List<string> rucksack)
     {
         var firstCompartment = rucksack.First();
         var secondCompartment = rucksack.Last();
@@ -26,11 +33,11 @@ public class Day3
         {
             foreach (var item2 in secondCompartment)
             {
-                if (item == item2) return item.ToString();
+                if (item == item2) return item;
             }
         }
 
-        return string.Empty;
+        return ' ';
     }
 
     private static List<List<string>> ParseInput()
