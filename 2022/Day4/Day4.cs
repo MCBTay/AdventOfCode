@@ -6,21 +6,62 @@ public class Day4
     public static void CampCleanup()
     {
         Console.WriteLine(" --- Day 4 ---");
-        var rucksacks = ParseInput();
+        var assignments = ParseInput();
+
+        var totalOverlaps = 0;
+        foreach (var assignment in assignments)
+        {
+          var first = assignment.First();
+          var last = assignment.Last();
+
+          if (first.First() <= last.First() &&
+              first.Last() >= last.Last())
+          {
+            totalOverlaps++;
+            continue;
+          }
+
+          if (first.First() >= last.First() &&
+              first.Last() <= last.Last())
+          {
+            totalOverlaps++;
+            continue;
+          }
+        }
+        Console.WriteLine($"Total overlaps are {totalOverlaps}");
     }
 
-    private static List<List<string>> ParseInput()
+    private static List<List<List<int>>> ParseInput()
     {
-        var rucksacks = new List<List<string>>();
+        var assignments = new List<List<List<int>>>();
     
-        foreach (var line in System.IO.File.ReadLines(@"Day4/sample_input.txt")) 
+        foreach (var line in System.IO.File.ReadLines(@"Day4/input.txt")) 
         {
-            var firstCompartment = String.Concat(line.Take(line.Length / 2));
-            var secondCompartment = String.Concat(line.TakeLast(line.Length / 2));
+          var pair = new List<List<int>>();
 
-            rucksacks.Add(new List<string> { firstCompartment, secondCompartment });
+          var range1 = line.Split(',')[0];
+          var range2 = line.Split(',')[1];
+
+          pair.Add(RangeToListOfInt(range1));
+          pair.Add(RangeToListOfInt(range2));
+
+          assignments.Add(pair);
         }
 
-        return rucksacks;
+        return assignments;
+    }
+
+    private static List<int> RangeToListOfInt(string range)
+    {
+      var ints = new List<int>();
+
+      var split = range.Split('-');
+
+      for (int i = Convert.ToInt32(split[0]); i <= Convert.ToInt32(split[1]); i++)
+      {
+        ints.Add(i);
+      }
+
+      return ints;
     }
 }
