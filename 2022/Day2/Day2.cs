@@ -5,6 +5,7 @@ public class Day2
 {
   public static void RockPaperScissors()
   {
+    Console.WriteLine(" --- Day 2 ---");
     var strategyGuide = ParseInput();
 
     var totalScore = 0;

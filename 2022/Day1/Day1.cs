@@ -5,6 +5,7 @@ public class Day1
 {
   public static void CountCalories()
   {
+    Console.WriteLine(" --- Day 1 ---");
     var elves = ParseInput();
     Console.WriteLine($"{elves.Count} elves...");
 
