@@ -15,6 +15,15 @@ public class Day3
             sumOfPriorities += ConvertToPriority(commonItem);
         }
         Console.WriteLine($"Sum of the priorities of items in each compartment of all rucksacks: {sumOfPriorities}");
+
+        sumOfPriorities = 0;
+        var elfGroups = rucksacks.Chunk(3).ToList();
+        foreach (var elfGroup in elfGroups)
+        {
+            var commonItem = FindCommonItem(elfGroup.ToList());
+            sumOfPriorities += ConvertToPriority(commonItem);
+        }
+        Console.WriteLine($"Sum of the priorities of the elf group badges: {sumOfPriorities}");
     }
 
     private static int ConvertToPriority(char c)
@@ -24,27 +33,23 @@ public class Day3
         return priority;
     }
 
+    private static char FindCommonItem(List<List<string>> elfGroup)
+    {
+        var ruckSacks = elfGroup.Select(x => x.First() + x.Last());
+        var intersection = ruckSacks.First().Intersect(ruckSacks.ElementAt(1).Intersect(ruckSacks.Last()));
+        return intersection.First();
+    }
+
     private static char FindCommonItem(List<string> rucksack)
     {
-        var firstCompartment = rucksack.First();
-        var secondCompartment = rucksack.Last();
-
-        foreach (var item in firstCompartment)
-        {
-            foreach (var item2 in secondCompartment)
-            {
-                if (item == item2) return item;
-            }
-        }
-
-        return ' ';
+        return rucksack.First().Intersect(rucksack.Last()).First();
     }
 
     private static List<List<string>> ParseInput()
     {
         var rucksacks = new List<List<string>>();
     
-        foreach (var line in System.IO.File.ReadLines(@"Day3/sample_input.txt")) 
+        foreach (var line in System.IO.File.ReadLines(@"Day3/input.txt")) 
         {
             var firstCompartment = String.Concat(line.Take(line.Length / 2));
             var secondCompartment = String.Concat(line.TakeLast(line.Length / 2));
