@@ -1,9 +1,9 @@
 // https://adventofcode.com/2022/day/4
-// --- Day 4: Rucksack Reorganization ---
+// --- Day 4: Camp Cleanup ---
 
 public class Day4
 {
-    public static void RucksackReorganization()
+    public static void CampCleanup()
     {
         Console.WriteLine(" --- Day 4 ---");
         var rucksacks = ParseInput();
