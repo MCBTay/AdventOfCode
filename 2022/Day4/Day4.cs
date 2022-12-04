@@ -15,31 +15,10 @@ public class Day4
           var first = assignment.First();
           var last = assignment.Last();
 
-          if (first.First() <= last.First() && first.Last() >= last.Last())
-          {
-            totalOverlaps++;
-          }
-          else if (first.First() >= last.First() && first.Last() <= last.Last())
-          {
-            totalOverlaps++;
-          }
+          if (first.Intersect(last).Count() > 0) anyOverlaps++;
 
-          if (last.Last() >= first.First() && last.Last() <= first.Last())
-          {
-            anyOverlaps++;
-          }
-          else if (last.First() >= first.First() && last.First() <= first.Last())
-          {
-            anyOverlaps++;
-          }
-          else if (first.Last() >= last.First() && first.Last() <= last.Last())
-          {
-            anyOverlaps++;
-          }
-          else if (first.First() >= last.First() && first.First() <= last.Last())
-          {
-            anyOverlaps++;
-          }
+          if (first.Intersect(last).Count() == first.Count) totalOverlaps++;
+          else if (first.Intersect(last).Count() == last.Count) totalOverlaps++;
         }
         Console.WriteLine($"Complete overlaps are {totalOverlaps}");
         Console.WriteLine($"Any overlaps are {anyOverlaps}");
@@ -49,7 +28,7 @@ public class Day4
     {
         var assignments = new List<List<List<int>>>();
     
-        foreach (var line in System.IO.File.ReadLines(@"Day4/sample_input.txt")) 
+        foreach (var line in System.IO.File.ReadLines(@"Day4/input.txt")) 
         {
           var pair = new List<List<int>>();
 
