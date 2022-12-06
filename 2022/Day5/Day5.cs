@@ -3,22 +3,53 @@
 
 public class Day5
 {
-    private static string filename = @"Day5/sample_input.txt";
+    private static string filename = @"Day5/input.txt";
     public static void SupplyStacks()
     {
       Console.WriteLine(" --- Day 5---");
       var stacks = ParseStacksInput();
       var moves = ParseMovesInput();
 
-      for (int i = 0; i < stacks.Count(); i++)
+      foreach (var move in moves)
+      {
+        var numCrates = move.First();
+        var sourceStack = move.ElementAt(1) - 1;
+        var destStack = move.Last() - 1;
+
+        for (int i = 0; i < numCrates; i++)
+        {
+          var itemToMove = stacks[sourceStack].Last();
+          stacks[destStack].Add(itemToMove);
+          stacks[sourceStack].RemoveAt(stacks[sourceStack].Count() - 1);
+        }
+      }
+
+      PrintTopRowResults(stacks);
+    }
+
+    private static void PrintStacks(List<List<string>> stacks)
+    {
+      Console.WriteLine("-----");
+
+      for (int i = 1; i < stacks.Count() + 1; i++)
       {
         Console.Write($"Stack {i}: ");
-        foreach (var crate in stacks[i])
+        foreach (var crate in stacks[i - 1])
         {
-          Console.Write(crate + ", ");
+          Console.Write($"{crate}, ");
         }
         Console.WriteLine();
       }
+    }
+
+    private static void PrintTopRowResults(List<List<string>> stacks)
+    {
+      Console.Write("Top row is: ");
+      foreach (var stack in stacks) 
+      {
+        Console.Write(stack.Last());
+      }
+      Console.WriteLine();
     }
 
     private static List<List<string>> ParseStacksInput()
@@ -48,7 +79,7 @@ public class Day5
           if (line[i] == ']') continue;
           if (line[i] == ' ') continue;
 
-          var stackIndex = i / 3;
+          var stackIndex = i / 4;
           if (stackIndex == stacks.Count()) stackIndex -= 1;
           stacks[stackIndex].Insert(0, line[i].ToString());
         }
