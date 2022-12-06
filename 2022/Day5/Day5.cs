@@ -10,11 +10,29 @@ public class Day5
       var stacks = ParseStacksInput();
       var moves = ParseMovesInput();
 
+      UpdateStacks(moves, stacks);
+      PrintTopRowResults(stacks);
+
+      stacks = ParseStacksInput();
+      UpdateStacks(moves, stacks, true);
+      PrintTopRowResults(stacks);
+    }
+
+    private static void UpdateStacks(List<List<int>> moves, List<List<string>> stacks, bool moveMultiple = false)
+    {
       foreach (var move in moves)
       {
         var numCrates = move.First();
         var sourceStack = move.ElementAt(1) - 1;
         var destStack = move.Last() - 1;
+
+        if (moveMultiple)
+        {
+          var itemsToMove = stacks[sourceStack].TakeLast(numCrates);
+          stacks[destStack].AddRange(itemsToMove);
+          stacks[sourceStack].RemoveRange(stacks[sourceStack].Count() - numCrates, numCrates);
+          continue;
+        }
 
         for (int i = 0; i < numCrates; i++)
         {
@@ -23,8 +41,6 @@ public class Day5
           stacks[sourceStack].RemoveAt(stacks[sourceStack].Count() - 1);
         }
       }
-
-      PrintTopRowResults(stacks);
     }
 
     private static void PrintStacks(List<List<string>> stacks)
