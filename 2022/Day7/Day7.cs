@@ -23,6 +23,12 @@ public class Day7
       }
 
       Console.WriteLine($"Total directory size to delete is {totalSize}");
+
+      var unusedSpace = 70000000 - root.GetTotalSize();
+      var spaceToFree = 30000000 - unusedSpace;
+
+      var winner = GetAllSubDirectories(root).Where(x => x.GetTotalSize() > spaceToFree).OrderBy(x => x.GetTotalSize()).First();
+      Console.WriteLine($"Total size of dir to delete is {winner.GetTotalSize()}");
     }
 
     private static List<Directory> GetAllSubDirectories(Directory root)
