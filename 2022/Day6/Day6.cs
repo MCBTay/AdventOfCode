@@ -7,18 +7,19 @@ public class Day6
     public static void TuningTrouble()
     {
       Console.WriteLine(" --- Day 6---");
-      Console.WriteLine($"Marker index is {FindIndexOfMarker()}");
+      Console.WriteLine($"Marker index is {FindIndexOfMarker(4)}");
+      Console.WriteLine($"Message start index is {FindIndexOfMarker(14)}");
     }
 
-    public static int FindIndexOfMarker()
+    public static int FindIndexOfMarker(int lengthOfMarker)
     {
       var chars = System.IO.File.ReadAllText(filename);
       var marker = new List<char>();
 
       for (int i = 0; i < chars.Length; i++)
       {
-        if (marker.Distinct().Count() == 4) return i;
-        if (marker.Count() == 4) marker.RemoveAt(0);
+        if (marker.Distinct().Count() == lengthOfMarker) return i;
+        if (marker.Count() == lengthOfMarker) marker.RemoveAt(0);
         marker.Add(chars[i]);       
       }
 
