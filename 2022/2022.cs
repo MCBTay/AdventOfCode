@@ -4,3 +4,4 @@ Day3.RucksackReorganization();
 Day4.CampCleanup();
 Day5.SupplyStacks();
 Day6.TuningTrouble();
+Day7.NoSpaceLeftOnDevice();
