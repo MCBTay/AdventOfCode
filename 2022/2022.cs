@@ -3,3 +3,4 @@ Day2.RockPaperScissors();
 Day3.RucksackReorganization();
 Day4.CampCleanup();
 Day5.SupplyStacks();
+Day6.TuningTrouble();
