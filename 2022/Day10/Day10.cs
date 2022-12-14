@@ -4,23 +4,73 @@ using System.Linq;
 
 public class Day10
 {
-    private static string filename = @"Day10/input.txt";
+    private static string filename = @"Day10/sample_input.txt";
     
+    private static List<List<string>> CRT;
+
     public static void CathodeRayTube()
     {
       Console.WriteLine(" --- Day 10 ---");
 
       var instructions = ParseInput();
+
+      var instructionDict = GetInstructionDict(instructions);
       
-      var signalStrengths = GetSignalStrengths(instructions);
+      var signalStrengths = GetSignalStrengths(instructionDict);
 
       Console.WriteLine($"The sum of the six signal strengths is {signalStrengths.Sum()}");
+
+      RenderCRT(instructionDict);
     }
 
-    private static List<int> GetSignalStrengths(List<Instruction> instructions)
+    private static void RenderCRT(Dictionary<int, int> instructions)
     {
-      var signalStrengths = new List<int>();
+      CreateCRTGrid();
 
+      foreach (var instruction in instructions)
+      {
+        var row = instruction.Key / 40;
+        var col = instruction.Value;
+
+        if (row == CRT.Count()) row--;
+        if (col < 0) col = 0;
+
+        if (col - 1 > 0) CRT[row][col - 1] = "#";
+        CRT[row][col] = "#";
+        if (col + 1 < CRT[row].Count()) CRT[row][col + 1] = "#";
+      }
+
+      PrintCRT();
+    }
+
+    private static void PrintCRT()
+    {
+      foreach (var row in CRT)
+      {
+        foreach(var col in row)
+        {
+          Console.Write(col);
+        }
+        Console.WriteLine();
+      }
+    }
+
+    private static void CreateCRTGrid()
+    {
+      CRT = new List<List<string>>();
+      for (var i = 0; i < 6; i++)
+      {
+        var list = new List<string>();
+        for (var j = 0; j < 40; j++)
+        {
+          list.Add(".");
+        }
+        CRT.Add(list);
+      }
+    }
+
+    private static Dictionary<int, int> GetInstructionDict(List<Instruction> instructions)
+    {
       var cycle = 0;
       var registerX = 1;
 
@@ -41,6 +91,12 @@ public class Day10
         dict.Add(cycle, registerX);
       }
 
+      return dict;
+    }
+
+    private static List<int> GetSignalStrengths(Dictionary<int, int> dict)
+    {
+      var signalStrengths = new List<int>();
       var cyclesToPoll = new List<int> { 20, 60, 100, 140, 180, 220 };
 
       foreach (var pollCycle in cyclesToPoll)
