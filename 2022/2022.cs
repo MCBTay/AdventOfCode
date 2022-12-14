@@ -6,3 +6,5 @@ Day5.SupplyStacks();
 Day6.TuningTrouble();
 Day7.NoSpaceLeftOnDevice();
 Day8.TreetopTreeHouse();
+
+Day10.CathodeRayTube();
