@@ -4,7 +4,7 @@ using System.Linq;
 
 public class Day11
 {
-    private static string filename = @"Day11/sample_input.txt";
+    private static string filename = @"Day11/input.txt";
 
     private static List<Monkey> Monkeys = new List<Monkey>();
     public static void MonkeyInTheMiddle()
@@ -13,10 +13,18 @@ public class Day11
 
       Monkeys = ParseInput();
 
-      foreach (var monkey in Monkeys)
+      int numRounds = 20;
+      for (int i = 0; i < numRounds; i++)
       {
-        monkey.InspectItems();
+        foreach (var monkey in Monkeys)
+        {
+          monkey.InspectItems();
+        }
       }
+
+      var topMonkeys = Monkeys.OrderByDescending(x => x.InspectionCount).Take(2);
+      
+      Console.WriteLine($"Monkey business is {topMonkeys.First().InspectionCount * topMonkeys.Last().InspectionCount}.");
     }
 
     private static List<Monkey> ParseInput()
@@ -76,6 +84,7 @@ public class Day11
       public List<int> StartingItems;
       public string Operation;
       public Test Test;
+      public int InspectionCount;
 
       public Monkey()
       {
@@ -83,6 +92,7 @@ public class Day11
         StartingItems = new List<int>();
         Operation = string.Empty;
         Test = new Test();
+        InspectionCount = 0;
       }
 
       public void InspectItems()
@@ -93,6 +103,7 @@ public class Day11
           worryLevel = InspectItem(worryLevel);
           worryLevel /= 3;
           ThrowItem(worryLevel);
+          InspectionCount++;
         }
         StartingItems.Clear();
       }
@@ -103,7 +114,15 @@ public class Day11
         var currentOperator = equation.Split(' ')[1];
         var value = equation.Split(' ')[2];
 
-        if (!Int32.TryParse(value, out var parsedInt)) return item;
+        int parsedInt = 0;
+        if (value == "old")
+        {
+          parsedInt = item;
+        }
+        else if (!Int32.TryParse(value, out parsedInt))
+        {
+          return item;
+        } 
 
         switch(currentOperator)
         {
