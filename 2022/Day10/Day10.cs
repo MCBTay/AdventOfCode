@@ -4,7 +4,7 @@ using System.Linq;
 
 public class Day10
 {
-    private static string filename = @"Day10/sample_input.txt";
+    private static string filename = @"Day10/input.txt";
     
     private static List<List<string>> CRT;
 
@@ -41,30 +41,13 @@ public class Day10
           registerX = instructions[i - 1];
         } 
 
-        if (Math.Abs(registerX - i) <= 1)
+        var row = i / 40;
+        var col = i % 40;
+        if (Math.Abs(registerX - col) <= 1)
         {
-          var row = i / 40;
-          if (row == 6) row--;
-
-          var col = i / 6;
-          if (col == 40) col--;
-
           CRT[row][col] = "#";
         }
       }
-
-      // foreach (var instruction in instructions)
-      // {
-      //   var row = instruction.Key / 40;
-      //   var col = instruction.Value;
-
-      //   if (row == CRT.Count()) row--;
-      //   if (col < 0) col = 0;
-
-      //   if (col - 1 > 0) CRT[row][col - 1] = "#";
-      //   CRT[row][col] = "#";
-      //   if (col + 1 < CRT[row].Count()) CRT[row][col + 1] = "#";
-      // }
 
       PrintCRT();
     }
