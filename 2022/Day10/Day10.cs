@@ -27,18 +27,44 @@ public class Day10
     {
       CreateCRTGrid();
 
-      foreach (var instruction in instructions)
+      instructions.Add(0, 1);
+
+      for (int i = 0; i < 240; i++)
       {
-        var row = instruction.Key / 40;
-        var col = instruction.Value;
+        var registerX = 1;
+        if (instructions.ContainsKey(i))
+        {
+          registerX = instructions[i];
+        } 
+        else
+        {
+          registerX = instructions[i - 1];
+        } 
 
-        if (row == CRT.Count()) row--;
-        if (col < 0) col = 0;
+        if (Math.Abs(registerX - i) <= 1)
+        {
+          var row = i / 40;
+          if (row == 6) row--;
 
-        if (col - 1 > 0) CRT[row][col - 1] = "#";
-        CRT[row][col] = "#";
-        if (col + 1 < CRT[row].Count()) CRT[row][col + 1] = "#";
+          var col = i / 6;
+          if (col == 40) col--;
+
+          CRT[row][col] = "#";
+        }
       }
+
+      // foreach (var instruction in instructions)
+      // {
+      //   var row = instruction.Key / 40;
+      //   var col = instruction.Value;
+
+      //   if (row == CRT.Count()) row--;
+      //   if (col < 0) col = 0;
+
+      //   if (col - 1 > 0) CRT[row][col - 1] = "#";
+      //   CRT[row][col] = "#";
+      //   if (col + 1 < CRT[row].Count()) CRT[row][col + 1] = "#";
+      // }
 
       PrintCRT();
     }
