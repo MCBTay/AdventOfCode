@@ -13,12 +13,22 @@ public class Day11
 
       Monkeys = ParseInput();
 
-      int numRounds = 20;
+      int numRounds = 10000;
       for (int i = 0; i < numRounds; i++)
       {
         foreach (var monkey in Monkeys)
         {
           monkey.InspectItems();
+        }
+
+        var roundCheck = new List<int> { 1, 20, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 1000 };
+        if (roundCheck.Contains(i))
+        {
+          Console.WriteLine($"== After round {i} ==");
+          foreach (var monkey in Monkeys)
+          {
+            Console.WriteLine($"Monkey {monkey.Id} inspected items {monkey.InspectionCount} times.");
+          }
         }
       }
 
@@ -78,18 +88,34 @@ public class Day11
       return monkeys;
     }
 
+    private static long Lcm(IEnumerable<long> numbers)
+    {
+        return numbers.Aggregate((s, val) => s * val / Gcd(s, val));
+    }
+
+    private static long Gcd(long n1, long n2)
+    {
+        while (true)
+        {
+            if (n2 == 0) return n1;
+            var n3 = n1;
+            n1 = n2;
+            n2 = n3 % n2;
+        }
+    }
+
     public class Monkey
     {
       public int Id;
-      public List<int> StartingItems;
+      public List<long> StartingItems;
       public string Operation;
       public Test Test;
-      public int InspectionCount;
+      public long InspectionCount;
 
       public Monkey()
       {
         Id = 0;
-        StartingItems = new List<int>();
+        StartingItems = new List<long>();
         Operation = string.Empty;
         Test = new Test();
         InspectionCount = 0;
@@ -97,29 +123,31 @@ public class Day11
 
       public void InspectItems()
       {
+        var lcm = Lcm(Monkeys.Select(m => m.Test.Divisor));
         foreach (var item in StartingItems)
         {
           var worryLevel = item;
           worryLevel = InspectItem(worryLevel);
-          worryLevel /= 3;
+          //worryLevel /= 3;
+          worryLevel %= lcm;
           ThrowItem(worryLevel);
           InspectionCount++;
         }
         StartingItems.Clear();
       }
 
-      private int InspectItem(int item)
+      private long InspectItem(long item)
       {
         var equation = Operation.Split(" = ")[1];
         var currentOperator = equation.Split(' ')[1];
         var value = equation.Split(' ')[2];
 
-        int parsedInt = 0;
+        long parsedInt = 0;
         if (value == "old")
         {
           parsedInt = item;
         }
-        else if (!Int32.TryParse(value, out parsedInt))
+        else if (!Int64.TryParse(value, out parsedInt))
         {
           return item;
         } 
@@ -132,12 +160,9 @@ public class Day11
         }
       }
 
-      private void ThrowItem(int item)
+      private void ThrowItem(long item)
       {
-        var divisor = Test.Condition.Split("divisible by ")[1];
-        if (!Int32.TryParse(divisor, out var parsedDivisor)) return;
-
-        if (item % parsedDivisor == 0)
+        if (item % Test.Divisor == 0)
         {
           var dest = Test.IfTrue.Split(' ').Last();
           if (!Int32.TryParse(dest, out var parsedDest)) return;
@@ -157,6 +182,16 @@ public class Day11
       public string Condition;
       public string IfTrue;
       public string IfFalse;
+
+      public long Divisor 
+      {
+        get
+        {
+          var divisor = Condition.Split("divisible by ")[1];
+          if (!Int64.TryParse(divisor, out var parsedDivisor)) return 1;
+          return parsedDivisor;
+        }
+      }
 
       public Test()
       {
