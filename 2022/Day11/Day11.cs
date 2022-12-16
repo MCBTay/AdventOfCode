@@ -20,16 +20,6 @@ public class Day11
         {
           monkey.InspectItems();
         }
-
-        var roundCheck = new List<int> { 1, 20, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 1000 };
-        if (roundCheck.Contains(i))
-        {
-          Console.WriteLine($"== After round {i} ==");
-          foreach (var monkey in Monkeys)
-          {
-            Console.WriteLine($"Monkey {monkey.Id} inspected items {monkey.InspectionCount} times.");
-          }
-        }
       }
 
       var topMonkeys = Monkeys.OrderByDescending(x => x.InspectionCount).Take(2);
