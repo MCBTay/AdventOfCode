@@ -22,8 +22,6 @@ public class Day1
         
         calibrationValue = $"{firstDigit}{lastDigit}";
 
-        Console.WriteLine($"Calibration value is {calibrationValue}.");
-
         sum += Int32.Parse(calibrationValue);
     }
 
@@ -36,9 +34,38 @@ public class Day1
     
     foreach (var line in System.IO.File.ReadLines(@"Day1/input.txt")) 
     {
-        lines.Add(line);
+        var replacedLine = ReplaceWrittenWithNumber(line);
+
+        lines.Add(replacedLine);
     }
 
     return lines;
+  }
+
+  private static string ReplaceWrittenWithNumber(string input)
+  {
+    input = InsertNumberIntoString(input, "one", "1");
+    input = InsertNumberIntoString(input, "two", "2");
+    input = InsertNumberIntoString(input, "three", "3");
+    input = InsertNumberIntoString(input, "four", "4");
+    input = InsertNumberIntoString(input, "five", "5");
+    input = InsertNumberIntoString(input, "six", "6");
+    input = InsertNumberIntoString(input, "seven", "7");
+    input = InsertNumberIntoString(input, "eight", "8");
+    input = InsertNumberIntoString(input, "nine", "9");
+    return input;
+  }
+
+  private static string InsertNumberIntoString(string input, string searching, string number)
+  {
+    var index = input.IndexOf(searching);
+
+    while (index != -1)
+    {
+        input = input.Insert(index + searching.Length - 1, number);
+        index = input.IndexOf(searching, index + 1);
+    }
+
+    return input;
   }
 }
