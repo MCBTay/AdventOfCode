@@ -22,6 +22,26 @@ public class Day3
     }
 
     Console.WriteLine($"Sum of part numbers is {sum}.");
+
+    CalculateGearRatios();
+  }
+
+  private static void CalculateGearRatios()
+  {
+    var gears = Symbols.Where(x => x.Character == '*');
+    var sumGearRatios = 0;
+    foreach (var gear in gears)
+    {
+      var partNumbers = PartNumbers
+        .Where(x => Math.Abs(x.Positions.First().Row - gear.Position.Row) <= 1 && x.NearSymbol(gear));
+
+      if (partNumbers.Count() != 2) continue;
+
+      var gearRatio = partNumbers.First().Number * partNumbers.Last().Number;
+      sumGearRatios += gearRatio;
+    }
+
+    Console.WriteLine($"Sum of gear ratios is {sumGearRatios}.");
   }
 
   private static int GetPartNumberIfNearSymbol(PartNumber partNumber, IEnumerable<Symbol> potentialSymbols)
@@ -60,7 +80,7 @@ public class Day3
 
         var strippedSection = section.Where(x => char.IsDigit(x)).ToArray();
 
-        var previousIndex = !string.IsNullOrEmpty(previousSection) ? line.IndexOf(previousSection) + 1 : 0;
+        var previousIndex = !string.IsNullOrEmpty(previousSection) ? line.IndexOf(previousSection) + previousSection.Count() : 0;
         var positions = new List<Position>();
 
         positions.Add(new Position(i, line.IndexOf(section, previousIndex)));
@@ -114,7 +134,7 @@ public class Day3
     }
 
     public bool NearSymbol(Symbol symbol)
-    {
+    {    
       foreach (var position in Positions)
       {
         if (Math.Abs(position.Col - symbol.Position.Col) > 1) continue;
