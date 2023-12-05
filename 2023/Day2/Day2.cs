@@ -1,5 +1,5 @@
 // https://adventofcode.com/2023/day/2
-// --- Day 1: Cube Conundrum ---
+// --- Day 2: Cube Conundrum ---
 
 public class Day2
 {
