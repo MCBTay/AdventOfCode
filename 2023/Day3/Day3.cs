@@ -10,7 +10,12 @@ public class Day3
   {
     Console.WriteLine(" --- Day 3 ---");
     ParseInput();
+    SumPartNumbers();
+    CalculateGearRatios();
+  }
 
+  private static void SumPartNumbers()
+  {
     var sum = 0;
     foreach (var partNumber in PartNumbers)
     {
@@ -22,8 +27,6 @@ public class Day3
     }
 
     Console.WriteLine($"Sum of part numbers is {sum}.");
-
-    CalculateGearRatios();
   }
 
   private static void CalculateGearRatios()
