@@ -1,5 +1,5 @@
 // https://adventofcode.com/2023/day/4
-// --- Day 3: Scratchcards ---
+// --- Day 4: Scratchcards ---
 
 public class Day4
 {
@@ -11,6 +11,10 @@ public class Day4
     ParseInput();
 
     Console.WriteLine($"Cards are worth {Cards.Sum(x => x.GetPoints())} points.");
+
+    var sumCopies = Cards.Sum(x => x.GetNumCopies());
+
+    Console.WriteLine($"There are {Cards.Count() + sumCopies} cards.");
   }
 
   private static void ParseInput()
@@ -45,9 +49,28 @@ public class Day4
   public class Card
   {
     public int CardNumber { get; set; }
-    public List<int> WinningNumbers { get; set; } = new List<int>();
-    public List<int> Numbers { get; set; } = new List<int>();
-    public int Points { get; set; } = 0;
+    public List<int> WinningNumbers { get; set; }
+    public List<int> Numbers { get; set; }
+    public int Points { get; set; }
+    public bool IsCopy { get; set; }
+
+    public Card()
+    {
+      CardNumber = 0;
+      WinningNumbers = new List<int>();
+      Numbers = new List<int>();
+      Points = 0;
+      IsCopy = false;
+    }
+
+    public Card(Card card)
+    {
+      CardNumber = card.CardNumber;
+      WinningNumbers = card.WinningNumbers;
+      Numbers = card.Numbers;
+      Points = card.Points;
+      IsCopy = true;
+    }
 
     public int GetPoints()
     {     
@@ -68,6 +91,12 @@ public class Day4
     public int GetNumberOfMatches()
     {
       return Numbers.Intersect(WinningNumbers).Count();
+    }
+
+    public int GetNumCopies()
+    {     
+      var matchedCards = Cards.GetRange(CardNumber, GetNumberOfMatches());
+      return matchedCards.Count() + matchedCards.Sum(x => x.GetNumCopies());
     }
   }
 }
