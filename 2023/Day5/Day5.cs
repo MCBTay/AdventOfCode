@@ -1,6 +1,8 @@
 // https://adventofcode.com/2023/day/5
 // --- Day 5: If You Give A Seed A Fertilizer ---
 
+using System.Security.Cryptography.X509Certificates;
+
 public class Day5
 {
     private const string SeedToSoil = "seed-to-soil";
@@ -18,16 +20,21 @@ public class Day5
         Console.WriteLine(" --- Day 5 ---");
         ParseInput();
 
-        Console.WriteLine("hehe");
+        GetLowestLocation();
+    }
+
+    private static void GetLowestLocation()
+    {
+        Console.WriteLine($"Lowest location is {almanac.Seeds.Select(x => x.GetLocation()).Min()}.");
     }
 
     private static void ParseInput()
     {
-        var text = File.ReadAllText(@"Day5/example_input.txt");
+        var text = File.ReadAllText(@"Day5/input.txt");
 
         var lines = text.Split('\n').ToList();
-        
-        Map mapToUpdate = null;
+
+        List<MapEntry>? mapToUpdate = null;
         foreach (var line in lines)
         {
             if (line.Contains("seeds:"))
@@ -46,11 +53,11 @@ public class Day5
             {
                 var entries = line
                     .Split(' ')
-                    .Select(int.Parse);
+                    .Select(long.Parse);
 
                 var mapEntry = new MapEntry(entries.ElementAt(0), entries.ElementAt(1), entries.ElementAt(2));
 
-                mapToUpdate.Entries.Add(mapEntry);
+                mapToUpdate.Add(mapEntry);
             }
             else
             {
@@ -65,58 +72,78 @@ public class Day5
           .Split(':')[1]
           .Split(' ')
           .Where(x => !string.IsNullOrEmpty(x))
-          .Select(x => Int32.Parse(x))
+          .Select(x => new Seed(long.Parse(x)))
           .ToList();
-
-        // Console.WriteLine($"Found {almanac.Seeds.Count} seeds...");
-
-        // foreach (var seed in almanac.Seeds)
-        // {
-        //   Console.Write($"{seed}, ");
-        // }
-        // Console.WriteLine();
     }
 
-    private static Map DetermineMapToUpdate(string line)
+    private static List<MapEntry> DetermineMapToUpdate(string line)
     {
         return line switch
         {
-            string s when s.StartsWith(SeedToSoil) => almanac.SeedToSoilMap,
-            string s when s.StartsWith(SoilToFertilizer) => almanac.SoilToFertilizerMap,
-            string s when s.StartsWith(FertilizerToWater) => almanac.FertilizerToWaterMap,
-            string s when s.StartsWith(WaterToLight) => almanac.WaterToLightMap,
-            string s when s.StartsWith(LightToTemperature) => almanac.LightToTemperatureMap,
-            string s when s.StartsWith(TemperatureToHumidity) => almanac.TemperatureToHumidityMap,
-            string s when s.StartsWith(HumidityToLocation) => almanac.HumidityToLocationMap,
-            _ => null
+            { } s when s.StartsWith(SeedToSoil) => almanac.SeedToSoilMap,
+            { } s when s.StartsWith(SoilToFertilizer) => almanac.SoilToFertilizerMap,
+            { } s when s.StartsWith(FertilizerToWater) => almanac.FertilizerToWaterMap,
+            { } s when s.StartsWith(WaterToLight) => almanac.WaterToLightMap,
+            { } s when s.StartsWith(LightToTemperature) => almanac.LightToTemperatureMap,
+            { } s when s.StartsWith(TemperatureToHumidity) => almanac.TemperatureToHumidityMap,
+            { } s when s.StartsWith(HumidityToLocation) => almanac.HumidityToLocationMap,
+            _ => throw new ArgumentOutOfRangeException(nameof(line), line, null)
         };
     }
 
     public class Almanac
     {
-        public List<int> Seeds { get; set; } = new List<int>();
+        public List<Seed> Seeds { get; set; } = new List<Seed>();
 
-        public Map SeedToSoilMap { get; set; } = new Map();
-        public Map SoilToFertilizerMap { get; set; } = new Map();
-        public Map FertilizerToWaterMap { get; set; } = new Map();
-        public Map WaterToLightMap { get; set; } = new Map();
-        public Map LightToTemperatureMap { get; set; } = new Map();
-        public Map TemperatureToHumidityMap { get; set; } = new Map();
-        public Map HumidityToLocationMap { get; set; } = new Map();
+        public List<MapEntry> SeedToSoilMap { get; set; } = new List<MapEntry>();
+        public List<MapEntry> SoilToFertilizerMap { get; set; } = new List<MapEntry>();
+        public List<MapEntry> FertilizerToWaterMap { get; set; } = new List<MapEntry>();
+        public List<MapEntry> WaterToLightMap { get; set; } = new List<MapEntry>();
+        public List<MapEntry> LightToTemperatureMap { get; set; } = new List<MapEntry>();
+        public List<MapEntry> TemperatureToHumidityMap { get; set; } = new List<MapEntry>();
+        public List<MapEntry> HumidityToLocationMap { get; set; } = new List<MapEntry>();
     }
 
-    public class Map
+    public class Seed
     {
-        public List<MapEntry> Entries { get; set; } = new List<MapEntry>();
+        public long Id { get; set; }
+
+        public Seed(long id)
+        {
+            Id = id;
+        }
+
+        public long GetLocation()
+        {
+            var soil = MapLookup(almanac.SeedToSoilMap, Id);
+            var fert = MapLookup(almanac.SoilToFertilizerMap, soil);
+            var aqua = MapLookup(almanac.FertilizerToWaterMap, fert);
+            var lite = MapLookup(almanac.WaterToLightMap, aqua);
+            var temp = MapLookup(almanac.LightToTemperatureMap, lite);
+            var humd = MapLookup(almanac.TemperatureToHumidityMap, temp);
+            return MapLookup(almanac.HumidityToLocationMap, humd);
+        }
+
+        private long MapLookup(List<MapEntry> map, long id)
+        {
+            var answer = map //almanac.SeedToSoilMap
+                .Where(x => id >= x.SourceRangeStart && id <= x.SourceRangeStart + x.RangeLength)
+                .Select(x => x.DestRangeStart + (id - x.SourceRangeStart))
+                .FirstOrDefault();
+
+            if (answer == 0) answer = id;
+
+            return answer;
+        }
     }
 
     public class MapEntry
     {
-        public int DestRangeStart { get; set; }
-        public int SourceRangeStart { get; set; }
-        public int RangeLength { get; set; }
+        public long DestRangeStart { get; set; }
+        public long SourceRangeStart { get; set; }
+        public long RangeLength { get; set; }
 
-        public MapEntry(int destRangeStart, int sourceRangeStart, int rangeLength)
+        public MapEntry(long destRangeStart, long sourceRangeStart, long rangeLength)
         {
             DestRangeStart = destRangeStart;
             SourceRangeStart = sourceRangeStart;
