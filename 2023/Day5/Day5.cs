@@ -31,26 +31,12 @@ public class Day5
 
     private static void GetLowestLocationSeedPairs()
     {
-        var lowest = almanac.SeedPairs
-            .Select(x => (seed: x, range: almanac.SeedToSoilMap.SliceRanges(x.Range)))
-            .Select(x => (seed: x.seed, range: almanac.SoilToFertilizerMap.SliceRanges(x.range)))
-            .Select(x => (seed: x.seed, range: almanac.FertilizerToWaterMap.SliceRanges(x.range)))
-            .Select(x => (seed: x.seed, range: almanac.WaterToLightMap.SliceRanges(x.range)))
-            .Select(x => (seed: x.seed, range: almanac.LightToTemperatureMap.SliceRanges(x.range)))
-            .Select(x => (seed: x.seed, range: almanac.TemperatureToHumidityMap.SliceRanges(x.range)))
-            .Select(x => (seed: x.seed, range: almanac.HumidityToLocationMap.SliceRanges(x.range)))
-            .SelectMany(x =>
-                x.range.GetStartIndexes().OrderBy(y => y.Key).Select(y =>
-                    (seed: x.seed.Range.Intervals[0].Start + y.Value, location: y.Key)))
-            .OrderBy(x => x.location)
-            .First();
-
-        Console.WriteLine($"Lowest location (seed pairs) is {lowest.location}.");
+        Console.WriteLine($"Lowest location (seed pairs) is {almanac.SeedPairs.Select(x => x.GetLocation()).Min()}.");
     }
 
     private static void ParseInput()
     {
-        var text = File.ReadAllText(@"Day5/example_input.txt");
+        var text = File.ReadAllText(@"Day5/input.txt");
 
         var lines = text.Split('\n').ToList();
 
@@ -149,10 +135,22 @@ public class Day5
 
             foreach (var interval in currentRange.Intervals)
             {
-                interval.Start = MapLookup(interval.Start);
+                interval.Start = Lookup(interval.Start);
             }
 
             return currentRange;
+        }
+
+        public long Lookup(long id)
+        {
+            var answer = Entries
+                .Where(x => id >= x.Source.Start && id <= x.Source.End)
+                .Select(x => x.Dest.Start + (id - x.Source.Start))
+                .FirstOrDefault();
+
+            if (answer == 0) answer = id;
+
+            return answer;
         }
     }
 
@@ -204,6 +202,24 @@ public class Day5
         {
             Range = new Range(start, length);
         }
+
+        public override long GetLocation()
+        {
+            var soil = almanac.SeedToSoilMap.SliceRanges(Range);
+            var fert = almanac.SoilToFertilizerMap.SliceRanges(soil);
+            var aqua = almanac.FertilizerToWaterMap.SliceRanges(fert);
+            var lite = almanac.WaterToLightMap.SliceRanges(aqua);
+            var temp = almanac.LightToTemperatureMap.SliceRanges(lite);
+            var humd = almanac.TemperatureToHumidityMap.SliceRanges(temp);
+            var location = almanac.HumidityToLocationMap.SliceRanges(humd);
+
+            location.Intervals = location.Intervals.Where(x => x.Length > 0).ToList();
+            var final = location.GetStartIndexes().OrderBy(x => x.Key).Select(x => x.Key).First();
+
+            Console.WriteLine($"Location {final}.");
+
+            return final;
+        }
     }
 
     public class Seed
@@ -215,27 +231,15 @@ public class Day5
             Id = id;
         }
 
-        public long GetLocation()
+        public virtual long GetLocation()
         {
-            var soil = MapLookup(almanac.SeedToSoilMap, Id);
-            var fert = MapLookup(almanac.SoilToFertilizerMap, soil);
-            var aqua = MapLookup(almanac.FertilizerToWaterMap, fert);
-            var lite = MapLookup(almanac.WaterToLightMap, aqua);
-            var temp = MapLookup(almanac.LightToTemperatureMap, lite);
-            var humd = MapLookup(almanac.TemperatureToHumidityMap, temp);
-            return MapLookup(almanac.HumidityToLocationMap, humd);
-        }
-
-        protected long MapLookup(Map map, long id)
-        {
-            var answer = map.Entries
-                .Where(x => id >= x.Source.Start && id <= x.Source.End)
-                .Select(x => x.Dest.Start + (id - x.Source.Start))
-                .FirstOrDefault();
-
-            if (answer == 0) answer = id;
-
-            return answer;
+            var soil = almanac.SeedToSoilMap.Lookup(Id);
+            var fert = almanac.SoilToFertilizerMap.Lookup(soil);
+            var aqua = almanac.FertilizerToWaterMap.Lookup(fert);
+            var lite = almanac.WaterToLightMap.Lookup(aqua);
+            var temp = almanac.LightToTemperatureMap.Lookup(lite);
+            var humd = almanac.TemperatureToHumidityMap.Lookup(temp);
+            return almanac.HumidityToLocationMap.Lookup(humd);
         }
     }
 
@@ -269,17 +273,17 @@ public class Day5
                         newRange.Intervals.Add(new Interval(interval.Start, Source.Start - interval.Start));
                     }
 
-                    // add the part of the interval after this entry
-                    if (interval.End > Source.End)
-                    {
-                        newRange.Intervals.Add(new Interval(Source.End, interval.End - Source.End));
-                    }
-
                     // now the parts that overlap
                     long overlapStart = Math.Max(interval.Start, Source.Start);
                     long overlapEnd = Math.Min(interval.End, Source.End);
 
                     newRange.Intervals.Add(new Interval(overlapStart, overlapEnd - overlapStart));
+
+                    // add the part of the interval after this entry
+                    if (interval.End > Source.End)
+                    {
+                        newRange.Intervals.Add(new Interval(Source.End, interval.End - Source.End));
+                    }
                 }
             }
 
