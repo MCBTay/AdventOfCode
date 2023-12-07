@@ -214,11 +214,13 @@ public class Day5
             var location = almanac.HumidityToLocationMap.SliceRanges(humd);
 
             location.Intervals = location.Intervals.Where(x => x.Length > 0).ToList();
-            var final = location.GetStartIndexes().OrderBy(x => x.Key).Select(x => x.Key).First();
+            var final = location.GetStartIndexes().OrderBy(x => x.Key).Select(x => (Range.Intervals[0].Start + x.Value, x.Key)).First();
+            //var final = location.GetStartIndexes().OrderBy(x => x.Key).Select(x => x.Key).First();
+            
+            Console.WriteLine($"Seed {final.Item1}, Location {final.Key}.");
+            //Console.WriteLine($"Location {final}.");
 
-            Console.WriteLine($"Location {final}.");
-
-            return final;
+            return final.Key;
         }
     }
 
