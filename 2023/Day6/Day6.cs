@@ -5,12 +5,17 @@ public class Day6
 {
     public static List<Race> Races = new List<Race>();
 
+    public static Race? Part2Race;
+
     public static void WaitForIt()
     {
         Console.WriteLine(" --- Day 6 ---");
         ParseInput();
 
-        Console.WriteLine(Races.Aggregate(1, (x, y) => x * y.NumWaysToWin()));
+        
+
+        Console.WriteLine($"After multiplying the number of ways to win, you get {Races.Aggregate(1, (x, y) => x * y.NumWaysToWin())}");
+        Console.WriteLine($"There are {Part2Race.NumWaysToWin()} numbers of ways to win the race.");
     }
 
     private static void ParseInput()
@@ -39,13 +44,24 @@ public class Day6
                     race.Distance = numbers.ElementAt(i);
                 }
             }
+
+            var number = long.Parse(line.Split(':')[1].Replace(" ", ""));
+
+            if (Part2Race == null)
+            {
+                Part2Race = new Race { Time = number };
+            }
+            else
+            {
+                Part2Race.Distance = number;
+            }
         }
     }
 
     public class Race
     {
-        public int Time { get; set; }
-        public int Distance { get; set; }
+        public long Time { get; set; }
+        public long Distance { get; set; }
 
         public int NumWaysToWin()
         {
