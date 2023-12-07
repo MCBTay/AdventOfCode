@@ -10,11 +10,12 @@ public class Day6
         Console.WriteLine(" --- Day 6 ---");
         ParseInput();
 
+        Console.WriteLine(Races.Aggregate(1, (x, y) => x * y.NumWaysToWin()));
     }
 
     private static void ParseInput()
     {
-        var lines = System.IO.File.ReadLines(@"Day6/example_input.txt");
+        var lines = System.IO.File.ReadLines(@"Day6/input.txt");
 
         var numRaces = lines.First().Split(' ').Count(x => !string.IsNullOrEmpty(x)) - 1;
 
@@ -38,8 +39,6 @@ public class Day6
                     race.Distance = numbers.ElementAt(i);
                 }
             }
-
-            Console.WriteLine($"{numbers.ElementAt(0)} {numbers.ElementAt(1)} {numbers.ElementAt(2)}");
         }
     }
 
@@ -47,5 +46,19 @@ public class Day6
     {
         public int Time { get; set; }
         public int Distance { get; set; }
+
+        public int NumWaysToWin()
+        {
+            var numWays = 0;
+
+            for (int i = 0; i < Time; i++)
+            {
+                if (i == 0 || i == Time - 1) continue;
+                if (i * (Time - i) <= Distance) continue;
+                numWays++;
+            }
+
+            return numWays;
+        }
     }
 }
