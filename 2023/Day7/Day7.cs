@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 public class Day7
 {
     public static List<Hand> Hands = new List<Hand>();
+    public static bool JokersWild = false;
 
     public static void CamelCards()
     {
@@ -18,6 +19,14 @@ public class Day7
             .ToList();
 
         Console.WriteLine($"Total winnings are {Hands.Sum(x => x.Bid * (ordered.IndexOf(x) + 1))}");
+        
+        JokersWild = true;
+        ordered = Hands
+            .OrderBy(x => x.HandType)
+            .ThenBy(x => x)
+            .ToList();
+
+        Console.WriteLine($"Total winnings (with jokers) are {Hands.Sum(x => x.Bid * (ordered.IndexOf(x) + 1))}");
     }
 
     private static void ParseInput()
@@ -49,11 +58,6 @@ public class Day7
 
         public HandType HandType => GetHandType();
 
-        public Hand()
-        {
-            
-        }
-
         private bool IsFiveOfAKind() => !Cards.Distinct().Skip(1).Any();
         private bool IsFourOfAKind() => Cards.Any(x => Cards.Count(y => y.Equals(x)) == 4);
         private bool IsFullHouse() => Cards.Any(x => Cards.Count(y => y.Equals(x)) == 3) && Cards.Distinct().Count() == 2;
@@ -64,36 +68,72 @@ public class Day7
 
         private HandType GetHandType()
         {
+            var handType = HandType.HighCard;
+
+            var numJokers = Cards.Count(x => x.Equals("J"));
+
             if (IsFiveOfAKind())
             {
-                return HandType.FiveOfAKind;
+                handType = HandType.FiveOfAKind;
             }
             else if (IsFourOfAKind())
             {
-                return HandType.FourOfAKind;
+                handType = HandType.FourOfAKind;
+
+                if (!JokersWild || numJokers <= 0) return handType;
+
+                handType = HandType.FiveOfAKind;
             }
             else if (IsFullHouse())
             {
-                return HandType.FullHouse;
+                handType = HandType.FullHouse;
+
+                if (!JokersWild || numJokers <= 0) return handType;
+
+                handType = HandType.FiveOfAKind;
             }
             else if (IsThreeOfAKind())
             {
-                return HandType.ThreeOfAKind;
+                handType = HandType.ThreeOfAKind;
+
+                if (!JokersWild || numJokers <= 0) return handType;
+
+                handType = HandType.FourOfAKind;
             }
             else if (IsTwoPair())
             {
-                return HandType.TwoPair;
+                handType = HandType.TwoPair;
+
+                if (!JokersWild || numJokers <= 0) return handType;
+
+                handType = numJokers switch
+                {
+                    1 => HandType.FullHouse,
+                    2 => HandType.FourOfAKind,
+                    _ => handType
+                };
             }
             else if (IsOnePair())
             {
-                return HandType.OnePair;
+                handType = HandType.OnePair;
+
+                if (!JokersWild || numJokers <= 0) return handType;
+
+                handType = numJokers switch
+                {
+                    1 => HandType.ThreeOfAKind,
+                    2 => HandType.ThreeOfAKind,
+                    _ => handType
+                };
             }
-            else if (IsHighCard())
+            else
             {
-                return HandType.HighCard;
+                if (!JokersWild || numJokers <= 0) return handType;
+
+                handType = HandType.OnePair;
             }
 
-            return HandType.HighCard;
+            return handType;
         }
 
         public int CompareTo(object? obj)
@@ -107,7 +147,8 @@ public class Day7
             {
                 if (hand.Cards[i] == Cards[i]) continue;
 
-                var compare = MapCardToNumber(Cards[i]).CompareTo(MapCardToNumber(hand.Cards[i]));
+                int compare = MapCardToNumber(Cards[i]).CompareTo(MapCardToNumber(hand.Cards[i]));
+
                 if (compare == 0) continue;
 
                 return compare;
@@ -118,24 +159,23 @@ public class Day7
 
         private int MapCardToNumber(string card)
         {
-            switch (card)
+            return card switch
             {
-                case "2": return 2;
-                case "3": return 3;
-                case "4": return 4;
-                case "5": return 5;
-                case "6": return 6;
-                case "7": return 7;
-                case "8": return 8;
-                case "9": return 9;
-                case "T": return 10;
-                case "J": return 11;
-                case "Q": return 12;
-                case "K": return 13;
-                case "A": return 14;
-            }
-
-            return 0;
+                "2" => 2,
+                "3" => 3,
+                "4" => 4,
+                "5" => 5,
+                "6" => 6,
+                "7" => 7,
+                "8" => 8,
+                "9" => 9,
+                "T" => 10,
+                "J" => JokersWild ? 1 : 11,
+                "Q" => 12,
+                "K" => 13,
+                "A" => 14,
+                _ => 0
+            };
         }
     }
 
