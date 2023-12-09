@@ -5,28 +5,55 @@ public class Day8
 {
     public static List<string> Instructions = new List<string>();
     public static Dictionary<string, Node> Steps = new Dictionary<string, Node>();
-    public static bool FoundZZZ = false;
 
     public static void HauntedWasteland()
     {
         Console.WriteLine(" --- Day 8 ---");
         ParseInput();
 
-        GetNumSteps();
+        Console.WriteLine($"Num steps to get to ZZZ is {GetSteps("AAA", x => x.Key == "ZZZ").Count}.");
+        Console.WriteLine($"Num steps to end on nodes ending with Z is {GetNumStepsPart2()}.");
     }
 
-    private static void GetNumSteps()
+    private static List<string> GetSteps(string start, Func<Node, bool> condition)
     {
-        var current = Steps["AAA"];
+        var current = Steps[start];
         var count = 0;
+        var path = new List<string>();
 
-        while (current.Key != "ZZZ")
+        while (!condition(current))
         {
+            path.Add(current.Key);
             current = Steps[Instructions[count % Instructions.Count] == "L" ? current.Left : current.Right];
             count++;
         }
 
-        Console.WriteLine($"Num steps to get to ZZZ is {count}.");
+        return path;
+    }
+
+    private static long GetNumStepsPart2()
+    {
+        var stepCounts = Steps.Values
+            .Where(x => x.Key.EndsWith("A"))
+            .Select(x => (long)GetSteps(x.Key, y => y.Key.EndsWith("Z")).Count);
+
+        return LCM(stepCounts);
+    }
+
+    private static long GCD(long left, long right)
+    {
+        while (right != 0)
+        {
+            left %= right;
+            (left, right) = (right, left);
+        }
+
+        return left;
+    }
+
+    private static long LCM(IEnumerable<long> numbers)
+    {
+        return numbers.Aggregate(1l, (x, y) => x / GCD(x, y) * y);
     }
 
     private static void ParseInput()
