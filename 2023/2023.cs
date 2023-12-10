@@ -5,4 +5,4 @@ Day4.Scratchcards();
 
 Day6.WaitForIt();
 Day7.CamelCards();
-Day8.Something();
+Day8.HauntedWasteland();
